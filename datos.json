@@ -1,0 +1,72 @@
+[
+    {
+        "nombre": "Yamil",
+        "cuenta": "325201559",
+        "NIP": 1002,
+        "saldo": 119800.0,
+        "movimientos": [
+            {
+                "fecha": "10/06/2026 18:22:38",
+                "Tipo": "Dep\u00f3sito",
+                "Monto": 30000.0,
+                "Saldo_anterior": 19800,
+                "Saldo_nuevo": 49800.0,
+                "descripcion": "Deposito en efectivo"
+            },
+            {
+                "fecha": "10/06/2026 18:33:21",
+                "Tipo": "Dep\u00f3sito",
+                "Monto": 100000.0,
+                "Saldo_anterior": 49800.0,
+                "Saldo_nuevo": 149800.0,
+                "descripcion": ""
+            },
+            {
+                "fecha": "10/06/2026 18:33:57",
+                "Tipo": "Transferencia enviada",
+                "Monto": 30000.0,
+                "Saldo_anterior": 149800.0,
+                "Saldo_nuevo": 119800.0,
+                "descripcion": "A Yadel"
+            }
+        ]
+    },
+    {
+        "nombre": "Yadel",
+        "cuenta": "325163396",
+        "NIP": 1107,
+        "saldo": 155000.0,
+        "movimientos": [
+            {
+                "fecha": "10/06/2026 18:24:44",
+                "Tipo": "Dep\u00f3sito",
+                "Monto": 100000.0,
+                "Saldo_anterior": 25000,
+                "Saldo_nuevo": 125000.0,
+                "descripcion": "Deposito en efectivo"
+            },
+            {
+                "fecha": "10/06/2026 18:33:57",
+                "Tipo": "Transferencia recibida",
+                "Monto": 30000.0,
+                "Saldo_anterior": 125000.0,
+                "Saldo_nuevo": 155000.0,
+                "descripcion": "De Yamil"
+            }
+        ]
+    },
+    {
+        "nombre": "Adrian",
+        "cuenta": "325148223",
+        "NIP": 2009,
+        "saldo": 15000,
+        "movimientos": []
+    },
+    {
+        "nombre": "Rodrigo",
+        "cuenta": "325063722",
+        "NIP": 2006,
+        "saldo": 30000,
+        "movimientos": []
+    }
+]

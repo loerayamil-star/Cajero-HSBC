@@ -3,8 +3,8 @@ import datetime
 
 print("=== BANCO HSBC ===")
 
-from datos import usuarios
-
+from datos import cargar_datos, guardar_datos, usuarios
+usuarios = cargar_datos()
 
 # ==========================================================================================================================
 # Funciones
@@ -12,7 +12,6 @@ from datos import usuarios
 
 def fmt(monto):
     return f"${monto:,.2f}"
-
 
 def registrar_movimiento(movimientos, Tipo, Monto, Saldo_anterior, Saldo_nuevo, descripcion=""):
     fecha = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -149,6 +148,7 @@ def menu(usuario):
                     time.sleep(10)
                     print(f"Depósito de {fmt(deposito)} realizado con éxito")
                     print(f"Su saldo actual es de {fmt(usuario['saldo'])}")
+                    guardar_datos(usuarios)
                 else:
                     print("El monto debe ser mayor a cero")
 
@@ -166,7 +166,7 @@ def menu(usuario):
                     time.sleep(10)
                     print(f"Retiro de {fmt(retirar)} realizado con éxito")
                     print(f"Su saldo actual es de {fmt(usuario['saldo'])}")
-
+                    guardar_datos(usuarios)
             elif accion == 4:
                 mostrar_historial(usuario['movimientos'])
 

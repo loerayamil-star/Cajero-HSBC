@@ -7,8 +7,8 @@ import datetime
 # === Datos =====================================================================
 
 
-from datos import usuarios
-
+from datos import cargar_datos, guardar_datos, usuarios
+usuarios = cargar_datos()
 
 def fmt(monto):
     return f"${monto:,.2f}"
@@ -121,7 +121,7 @@ def retirar_dinero():
         usuario_activo['saldo'] -= monto
         registrar_movimiento(usuario_activo['movimientos'], "Retiro", monto, saldo_anterior, usuario_activo['saldo'])
         messagebox.showinfo("Retiro", f"Se ha retirado {fmt(monto)}.\nSu nuevo saldo es: {fmt(usuario_activo['saldo'])}")
-
+        guardar_datos(usuarios)
 
 def depositar_dinero():
     monto = simpledialog.askfloat("Depósito", "Ingrese el monto a depositar:")
@@ -134,7 +134,7 @@ def depositar_dinero():
         usuario_activo['saldo'] += monto
         registrar_movimiento(usuario_activo['movimientos'], "Depósito", monto, saldo_anterior, usuario_activo['saldo'])
         messagebox.showinfo("Depósito", f"Se ha depositado {fmt(monto)}.\nSu nuevo saldo es: {fmt(usuario_activo['saldo'])}")
-
+        guardar_datos(usuarios)
 
 def transferir_dinero():
     cuenta_destino = simpledialog.askstring("Transferencia", "Ingrese el número de cuenta destino:")
@@ -175,6 +175,7 @@ def transferir_dinero():
     registrar_movimiento(usuario_destino['movimientos'], "Transferencia recibida", monto, saldo_anterior_destino, usuario_destino['saldo'], f"De {usuario_activo['nombre']}")
 
     messagebox.showinfo("Transferencia", f"Se han transferido {fmt(monto)} a {usuario_destino['nombre']}.\nSu nuevo saldo es: {fmt(usuario_activo['saldo'])}")
+    guardar_datos(usuarios)
 
 
 def historial_financiero():
@@ -229,6 +230,7 @@ def cambiar_nip():
         return
 
     usuario_activo['NIP'] = nip_nuevo
+    guardar_datos(usuarios)
     messagebox.showinfo("NIP actualizado", "Su NIP ha sido actualizado correctamente.")
 
 
