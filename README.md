@@ -45,6 +45,19 @@ python cajero_interf.py
 
 ---
 
+## 🔒 Seguridad
+
+Los datos de usuarios (NIPs y cuentas) se almacenan en `datos.py` 
+y `datos.json` que están en `.gitignore` para evitar exponer 
+información sensible en el repositorio.
+
+Usa `datos_ejemplo.py` y `datos_ejemplo.json` como referencia 
+para crear tus propios archivos de datos locales.
+
+Este proyecto fue mi primer contacto con buenas prácticas 
+de seguridad en código — detecté que `datos.json` podía 
+exponer información y lo resolví antes de subir los cambios.
+
 ## Nota
 
 Este es un proyecto educativo desarrollado por mi para aprender los fundamentos de Python: funciones, estructuras de datos, manejo de errores y construcción de interfaces gráficas con Tkinter. Los datos de usuarios, cuentas y NIPs son completamente ficticios.
