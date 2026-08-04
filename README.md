@@ -58,6 +58,31 @@ Este proyecto fue mi primer contacto con buenas prácticas
 de seguridad en código — detecté que `datos.json` podía 
 exponer información y lo resolví antes de subir los cambios.
 
+## Limitaciones conocidas
+
+Este proyecto tiene trade-offs técnicos que conozco y que dejé así 
+a propósito, por ser un proyecto de aprendizaje y no un sistema 
+en producción:
+
+- **Montos en `float`**: los saldos, depósitos, retiros y transferencias 
+  se manejan con `float` en vez de `Decimal`. Para dinero real esto es 
+  un antipatrón porque el punto flotante puede acumular errores de 
+  redondeo tras muchas operaciones.
+- **NIP en texto plano**: el NIP se guarda como número plano en el JSON 
+  y se compara directamente, sin hashing. En un sistema real las 
+  credenciales nunca deberían almacenarse así.
+- **Diseño a nivel de módulo**: `cajero.py` no encapsula su lógica en 
+  funciones ni usa `if __name__ == "__main__":`; usa variables globales 
+  sueltas (`intentos_realizados`, `bloqueo`, `usuario_encontrado`, etc.) 
+  para el flujo de login en vez de pasar estado explícitamente.
+- **`try/except` amplio**: algunos bloques (el menú completo en 
+  `cajero.py`, el login en `cajero_interf.py`) envuelven varias 
+  operaciones distintas bajo un solo `except ValueError`, lo que puede 
+  ocultar errores no relacionados con el parseo de inputs.
+- **Escritura de datos no atómica**: `guardar_datos()` escribe 
+  directamente sobre el archivo JSON. Si el proceso se interrumpe a 
+  la mitad de la escritura, el archivo puede quedar corrupto.
+
 ## Nota
 
 Este es un proyecto educativo desarrollado por mi para aprender los fundamentos de Python: funciones, estructuras de datos, manejo de errores y construcción de interfaces gráficas con Tkinter. Los datos de usuarios, cuentas y NIPs son completamente ficticios.
