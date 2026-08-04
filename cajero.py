@@ -1,11 +1,16 @@
-import time
 import datetime
 import getpass
+import sys
+import time
+
+from datos_ejemplo import cargar_datos, guardar_datos
 
 print("=== BANCO HSBC ===")
 
-from datos_ejemplo import cargar_datos, guardar_datos, usuarios
 usuarios = cargar_datos()
+
+TELEFONO_BLOQUEO = "555-000-0000"
+TELEFONO_SOPORTE = "01-800-123-4567"
 
 # ==========================================================================================================================
 # Funciones
@@ -14,8 +19,9 @@ usuarios = cargar_datos()
 def fmt(monto):
     return f"${monto:,.2f}"
 
+
 def registrar_movimiento(movimientos, Tipo, Monto, Saldo_anterior, Saldo_nuevo, descripcion=""):
-    fecha = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    fecha = datetime.datetime.now(datetime.timezone.utc).astimezone().strftime("%d/%m/%Y %H:%M:%S")
     movimiento = {
         'fecha': fecha,
         'Tipo': Tipo,
@@ -25,6 +31,7 @@ def registrar_movimiento(movimientos, Tipo, Monto, Saldo_anterior, Saldo_nuevo, 
         'descripcion': descripcion
     }
     movimientos.append(movimiento)
+
 
 def mostrar_historial(movimientos):
     print("\n" + "="*60)
@@ -42,6 +49,7 @@ def mostrar_historial(movimientos):
         signo = "+" if mov['Tipo'] == 'Depósito' else "-"
         monto_str = f"{signo}{fmt(mov['Monto'])}"
         print(f"{i:<3}{mov['fecha']:<20}{mov['Tipo']:<12}{monto_str:<14}{fmt(mov['Saldo_nuevo'])}")
+
 
 def mostrar_resumen(movimientos):
     total_depositos = sum(mov['Monto'] for mov in movimientos if mov['Tipo'] == 'Depósito')
@@ -62,7 +70,7 @@ intentos_realizados_nip = 0
 bloqueo = 0
 usuario_encontrado = None
 
-while True and usuario_encontrado is None:
+while usuario_encontrado is None:
     cuenta_ingresada = input("- INGRESE SU NUMERO DE CUENTA - ")
 
     for u in usuarios:
@@ -75,36 +83,32 @@ while True and usuario_encontrado is None:
         intentos_realizados += 1
 
     if intentos_realizados >= 4:
-        print("- Cuenta bloqueada, intente de nuevo mas tarde o llame al 555-000-0000 -")
+        print(f"- Cuenta bloqueada, intente de nuevo mas tarde o llame al {TELEFONO_BLOQUEO} -")
         bloqueo += 1
         break
 
 if bloqueo == 1:
-    exit()
+    sys.exit()
 
-while True and usuario_encontrado is not None:
-    try:
-        nip_ingresado = getpass.getpass("- INGRESE SU NIP - ")
+while usuario_encontrado is not None:
+    nip_ingresado = getpass.getpass("- INGRESE SU NIP - ")
 
-        if str(usuario_encontrado['NIP']) == nip_ingresado:
-            print("- NIP CORRECTO, ESPERE... -")
-            time.sleep(5)
-            break
+    if str(usuario_encontrado['NIP']) == nip_ingresado:
+        print("- NIP CORRECTO, ESPERE... -")
+        time.sleep(5)
+        break
 
-        if str(usuario_encontrado['NIP']) != nip_ingresado:
-            print("- NIP INCORRECTO, INTENTE DE NUEVO -")
-            intentos_realizados_nip += 1
+    if str(usuario_encontrado['NIP']) != nip_ingresado:
+        print("- NIP INCORRECTO, INTENTE DE NUEVO -")
+        intentos_realizados_nip += 1
 
-        if intentos_realizados_nip >= 4:
-            print("- Cuenta bloqueada, intente de nuevo mas tarde o llame al 555-000-0000 -")
-            bloqueo += 1
-            break
-
-    except ValueError:
-        print("- Por favor, ingrese solo números -")
+    if intentos_realizados_nip >= 4:
+        print(f"- Cuenta bloqueada, intente de nuevo mas tarde o llame al {TELEFONO_BLOQUEO} -")
+        bloqueo += 1
+        break
 
 if bloqueo == 1:
-    exit()
+    sys.exit()
 
 
 # ===========================================================================================================================
@@ -144,7 +148,10 @@ def menu(usuario):
                 if deposito > 0:
                     saldo_anterior = usuario['saldo']
                     usuario['saldo'] += deposito
-                    registrar_movimiento(usuario['movimientos'], 'Depósito', deposito, saldo_anterior, usuario['saldo'], "Deposito en efectivo")
+                    registrar_movimiento(
+                        usuario['movimientos'], 'Depósito', deposito, saldo_anterior,
+                        usuario['saldo'], "Deposito en efectivo"
+                    )
                     print("Espere. . .")
                     time.sleep(10)
                     print(f"Depósito de {fmt(deposito)} realizado con éxito")
@@ -162,7 +169,10 @@ def menu(usuario):
                 else:
                     saldo_anterior = usuario['saldo']
                     usuario['saldo'] -= retirar
-                    registrar_movimiento(usuario['movimientos'], 'Retiro', retirar, saldo_anterior, usuario['saldo'], "Retiro en Cajero")
+                    registrar_movimiento(
+                        usuario['movimientos'], 'Retiro', retirar, saldo_anterior,
+                        usuario['saldo'], "Retiro en Cajero"
+                    )
                     print("Espere. . .")
                     time.sleep(10)
                     print(f"Retiro de {fmt(retirar)} realizado con éxito")
@@ -183,12 +193,18 @@ def menu(usuario):
                     for i, mov in enumerate(ultimos, 1):
                         signo = "+" if mov['Tipo'] == 'Depósito' else "-"
                         monto_str = f"{signo}{fmt(mov['Monto'])}"
-                        print(f"{i:<3}{mov['fecha']:<20}{mov['Tipo']:<12}{monto_str:<14}{fmt(mov['Saldo_nuevo'])}")
+                        print(
+                            f"{i:<3}{mov['fecha']:<20}{mov['Tipo']:<12}"
+                            f"{monto_str:<14}{fmt(mov['Saldo_nuevo'])}"
+                        )
                 else:
                     print("No hay movimientos registrados")
 
             elif accion == 7:
-                print("Para soporte, por favor contacte a nuestro servicio al cliente al 01-800-123-4567 o envíe un correo a soporte@hsbc.com")
+                print(
+                    f"Para soporte, por favor contacte a nuestro servicio al cliente "
+                    f"al {TELEFONO_SOPORTE} o envíe un correo a soporte@hsbc.com"
+                )
 
             elif accion == 8:
                 print("¡Muchas Gracias por preferir HSBC!")
@@ -206,6 +222,7 @@ def menu(usuario):
 
         except ValueError:
             print("Error: Por favor, ingrese solo números")
+
 
 menu(usuario_encontrado)
 

@@ -1,14 +1,14 @@
-import tkinter as tk
-from tkinter import messagebox
-from tkinter import simpledialog
 import datetime
+import tkinter as tk
+from tkinter import messagebox, simpledialog
 
+from datos_ejemplo import cargar_datos, guardar_datos
 
 # === Datos =====================================================================
 
 
-from datos import cargar_datos, guardar_datos, usuarios
 usuarios = cargar_datos()
+
 
 def fmt(monto):
     return f"${monto:,.2f}"
@@ -43,6 +43,7 @@ entrada_nip.pack(pady=5)
 usuario_activo = None
 intentos_login = 0
 
+
 def validar_login():
     global usuario_activo, intentos_login
 
@@ -56,16 +57,22 @@ def validar_login():
         if usuario_encontrado is None:
             intentos_login += 1
             if intentos_login >= 3:
-                messagebox.showerror("Bloqueado", "Demasiados intentos fallidos. La aplicación se cerrará.")
+                messagebox.showerror(
+                    "Bloqueado", "Demasiados intentos fallidos. La aplicación se cerrará."
+                )
                 ventana.destroy()
                 return
-            messagebox.showerror("Error", f"Número de cuenta no encontrado. Intento {intentos_login}/3.")
+            messagebox.showerror(
+                "Error", f"Número de cuenta no encontrado. Intento {intentos_login}/3."
+            )
             return
 
         if usuario_encontrado['NIP'] != int(entrada_nip.get()):
             intentos_login += 1
             if intentos_login >= 3:
-                messagebox.showerror("Bloqueado", "Demasiados intentos fallidos. La aplicación se cerrará.")
+                messagebox.showerror(
+                    "Bloqueado", "Demasiados intentos fallidos. La aplicación se cerrará."
+                )
                 ventana.destroy()
                 return
             messagebox.showerror("Error", f"NIP incorrecto. Intento {intentos_login}/3.")
@@ -80,6 +87,7 @@ def validar_login():
     except ValueError:
         messagebox.showerror("Error", "Por favor, ingrese valores válidos.")
 
+
 tk.Button(frame_login, text="Ingresar", command=validar_login).pack(pady=10)
 
 
@@ -92,7 +100,7 @@ tk.Label(frame_menu, textvariable=nombre_usuario, font=("Arial", 14)).pack(pady=
 
 
 def registrar_movimiento(movimientos, Tipo, Monto, Saldo_anterior, Saldo_nuevo, descripcion=""):
-    fecha = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    fecha = datetime.datetime.now(datetime.timezone.utc).astimezone().strftime("%d/%m/%Y %H:%M:%S")
     movimiento = {
         'fecha': fecha,
         'Tipo': Tipo,
@@ -119,9 +127,15 @@ def retirar_dinero():
     else:
         saldo_anterior = usuario_activo['saldo']
         usuario_activo['saldo'] -= monto
-        registrar_movimiento(usuario_activo['movimientos'], "Retiro", monto, saldo_anterior, usuario_activo['saldo'])
-        messagebox.showinfo("Retiro", f"Se ha retirado {fmt(monto)}.\nSu nuevo saldo es: {fmt(usuario_activo['saldo'])}")
+        registrar_movimiento(
+            usuario_activo['movimientos'], "Retiro", monto, saldo_anterior, usuario_activo['saldo']
+        )
+        messagebox.showinfo(
+            "Retiro",
+            f"Se ha retirado {fmt(monto)}.\nSu nuevo saldo es: {fmt(usuario_activo['saldo'])}"
+        )
         guardar_datos(usuarios)
+
 
 def depositar_dinero():
     monto = simpledialog.askfloat("Depósito", "Ingrese el monto a depositar:")
@@ -132,12 +146,21 @@ def depositar_dinero():
     else:
         saldo_anterior = usuario_activo['saldo']
         usuario_activo['saldo'] += monto
-        registrar_movimiento(usuario_activo['movimientos'], "Depósito", monto, saldo_anterior, usuario_activo['saldo'])
-        messagebox.showinfo("Depósito", f"Se ha depositado {fmt(monto)}.\nSu nuevo saldo es: {fmt(usuario_activo['saldo'])}")
+        registrar_movimiento(
+            usuario_activo['movimientos'], "Depósito", monto,
+            saldo_anterior, usuario_activo['saldo']
+        )
+        messagebox.showinfo(
+            "Depósito",
+            f"Se ha depositado {fmt(monto)}.\nSu nuevo saldo es: {fmt(usuario_activo['saldo'])}"
+        )
         guardar_datos(usuarios)
 
+
 def transferir_dinero():
-    cuenta_destino = simpledialog.askstring("Transferencia", "Ingrese el número de cuenta destino:")
+    cuenta_destino = simpledialog.askstring(
+        "Transferencia", "Ingrese el número de cuenta destino:"
+    )
     if cuenta_destino is None:
         return
 
@@ -155,7 +178,9 @@ def transferir_dinero():
         messagebox.showerror("Error", "No puede transferir a su propia cuenta.")
         return
 
-    monto = simpledialog.askfloat("Transferencia", f"Ingrese el monto a transferir a {usuario_destino['nombre']}:")
+    monto = simpledialog.askfloat(
+        "Transferencia", f"Ingrese el monto a transferir a {usuario_destino['nombre']}:"
+    )
     if monto is None:
         return
     elif monto <= 0:
@@ -171,25 +196,45 @@ def transferir_dinero():
     usuario_activo['saldo'] -= monto
     usuario_destino['saldo'] += monto
 
-    registrar_movimiento(usuario_activo['movimientos'], "Transferencia enviada", monto, saldo_anterior_origen, usuario_activo['saldo'], f"A {usuario_destino['nombre']}")
-    registrar_movimiento(usuario_destino['movimientos'], "Transferencia recibida", monto, saldo_anterior_destino, usuario_destino['saldo'], f"De {usuario_activo['nombre']}")
+    registrar_movimiento(
+        usuario_activo['movimientos'], "Transferencia enviada", monto, saldo_anterior_origen,
+        usuario_activo['saldo'], f"A {usuario_destino['nombre']}"
+    )
+    registrar_movimiento(
+        usuario_destino['movimientos'], "Transferencia recibida", monto, saldo_anterior_destino,
+        usuario_destino['saldo'], f"De {usuario_activo['nombre']}"
+    )
 
-    messagebox.showinfo("Transferencia", f"Se han transferido {fmt(monto)} a {usuario_destino['nombre']}.\nSu nuevo saldo es: {fmt(usuario_activo['saldo'])}")
+    messagebox.showinfo(
+        "Transferencia",
+        f"Se han transferido {fmt(monto)} a {usuario_destino['nombre']}.\n"
+        f"Su nuevo saldo es: {fmt(usuario_activo['saldo'])}"
+    )
     guardar_datos(usuarios)
 
 
 def historial_financiero():
     if usuario_activo['movimientos']:
-        historial = "\n".join([f"{m['fecha']} - {m['Tipo']} - {fmt(m['Monto'])} - Saldo: {fmt(m['Saldo_nuevo'])}" for m in usuario_activo['movimientos']])
+        historial = "\n".join([
+            f"{m['fecha']} - {m['Tipo']} - {fmt(m['Monto'])} - Saldo: {fmt(m['Saldo_nuevo'])}"
+            for m in usuario_activo['movimientos']
+        ])
         messagebox.showinfo("Historial Financiero", historial)
     else:
         messagebox.showinfo("Historial Financiero", "No hay movimientos registrados.")
 
 
 def resumen_financiero():
-    total_depositos = sum(mov['Monto'] for mov in usuario_activo['movimientos'] if mov['Tipo'] == 'Depósito')
-    total_retiros = sum(mov['Monto'] for mov in usuario_activo['movimientos'] if mov['Tipo'] == 'Retiro')
-    total_transferencias = sum(mov['Monto'] for mov in usuario_activo['movimientos'] if mov['Tipo'] == 'Transferencia enviada')
+    total_depositos = sum(
+        mov['Monto'] for mov in usuario_activo['movimientos'] if mov['Tipo'] == 'Depósito'
+    )
+    total_retiros = sum(
+        mov['Monto'] for mov in usuario_activo['movimientos'] if mov['Tipo'] == 'Retiro'
+    )
+    total_transferencias = sum(
+        mov['Monto'] for mov in usuario_activo['movimientos']
+        if mov['Tipo'] == 'Transferencia enviada'
+    )
     saldo_neto = total_depositos - total_retiros - total_transferencias
     resumen = (
         f"Total de depósitos: {fmt(total_depositos)}\n"
@@ -203,25 +248,34 @@ def resumen_financiero():
 def ultimos_movimientos():
     ultimos = usuario_activo['movimientos'][-5:]
     if ultimos:
-        historial = "\n".join([f"{m['fecha']} - {m['Tipo']} - {fmt(m['Monto'])} - Saldo: {fmt(m['Saldo_nuevo'])}" for m in ultimos])
+        historial = "\n".join([
+            f"{m['fecha']} - {m['Tipo']} - {fmt(m['Monto'])} - Saldo: {fmt(m['Saldo_nuevo'])}"
+            for m in ultimos
+        ])
         messagebox.showinfo("Últimos 5 Movimientos", historial)
     else:
         messagebox.showinfo("Últimos 5 Movimientos", "No hay movimientos registrados.")
 
 
 def cambiar_nip():
-    nip_actual = simpledialog.askinteger("Cambiar NIP", "Ingrese su NIP actual:")
+    nip_actual = simpledialog.askinteger(
+        "Cambiar NIP", "Ingrese su NIP actual:", minvalue=1000, maxvalue=9999
+    )
     if nip_actual is None:
         return
     if nip_actual != usuario_activo['NIP']:
         messagebox.showerror("Error", "NIP incorrecto.")
         return
 
-    nip_nuevo = simpledialog.askinteger("Cambiar NIP", "Ingrese su nuevo NIP:")
+    nip_nuevo = simpledialog.askinteger(
+        "Cambiar NIP", "Ingrese su nuevo NIP:", minvalue=1000, maxvalue=9999
+    )
     if nip_nuevo is None:
         return
 
-    nip_confirmacion = simpledialog.askinteger("Cambiar NIP", "Confirme su nuevo NIP:")
+    nip_confirmacion = simpledialog.askinteger(
+        "Cambiar NIP", "Confirme su nuevo NIP:", minvalue=1000, maxvalue=9999
+    )
     if nip_confirmacion is None:
         return
 
@@ -235,7 +289,11 @@ def cambiar_nip():
 
 
 def soporte():
-    messagebox.showinfo("Soporte", "Para soporte, contacte a nuestro servicio al cliente al 01-800-123-4567\no envíe un correo a soporte@hsbc.com")
+    messagebox.showinfo(
+        "Soporte",
+        "Para soporte, contacte a nuestro servicio al cliente al 01-800-123-4567\n"
+        "o envíe un correo a soporte@hsbc.com"
+    )
 
 
 def cerrar_sesion():

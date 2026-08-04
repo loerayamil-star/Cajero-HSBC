@@ -11,8 +11,8 @@ def cargar_datos():
         with open("datos_ejemplo.json", "r", encoding="utf-8") as archivo:
             return json.load(archivo)
     except FileNotFoundError:
-        from datos_ejemplo import usuarios
         return usuarios
+
 
 usuarios = [
     {'nombre': 'Usuario1', 'cuenta': '000000001', 'NIP': 1234, 'saldo': 10000, 'movimientos': []},
