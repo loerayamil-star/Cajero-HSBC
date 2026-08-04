@@ -1,9 +1,10 @@
 import time
 import datetime
+import getpass
 
 print("=== BANCO HSBC ===")
 
-from datos import cargar_datos, guardar_datos, usuarios
+from datos_ejemplo import cargar_datos, guardar_datos, usuarios
 usuarios = cargar_datos()
 
 # ==========================================================================================================================
@@ -83,7 +84,7 @@ if bloqueo == 1:
 
 while True and usuario_encontrado is not None:
     try:
-        nip_ingresado = input("- INGRESE SU NIP - ")
+        nip_ingresado = getpass.getpass("- INGRESE SU NIP - ")
 
         if str(usuario_encontrado['NIP']) == nip_ingresado:
             print("- NIP CORRECTO, ESPERE... -")
