@@ -74,7 +74,7 @@ while True and usuario_encontrado is None:
         intentos_realizados += 1
 
     if intentos_realizados >= 4:
-        print("- Cuenta bloqueada, intente de nuevo mas tarde o llame al 55-2118-3123 -")
+        print("- Cuenta bloqueada, intente de nuevo mas tarde o llame al 555-000-0000 -")
         bloqueo += 1
         break
 
@@ -85,17 +85,17 @@ while True and usuario_encontrado is not None:
     try:
         nip_ingresado = input("- INGRESE SU NIP - ")
 
-        if usuario_encontrado['NIP'] == int(nip_ingresado):
+        if str(usuario_encontrado['NIP']) == nip_ingresado:
             print("- NIP CORRECTO, ESPERE... -")
             time.sleep(5)
             break
 
-        if nip_ingresado != usuario_encontrado['NIP']:
+        if str(usuario_encontrado['NIP']) != nip_ingresado:
             print("- NIP INCORRECTO, INTENTE DE NUEVO -")
             intentos_realizados_nip += 1
 
         if intentos_realizados_nip >= 4:
-            print("- Cuenta bloqueada, intente de nuevo mas tarde o llame al 55-2118-3123 -")
+            print("- Cuenta bloqueada, intente de nuevo mas tarde o llame al 555-000-0000 -")
             bloqueo += 1
             break
 
