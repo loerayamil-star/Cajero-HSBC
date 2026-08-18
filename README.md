@@ -4,6 +4,22 @@ Simulador de cajero automático desarrollado en Python como proyecto de aprendiz
 
 ---
 
+## Capturas de pantalla
+
+![Pantalla de login](assets/login.png)
+
+![Transferencia exitosa](assets/transferencia-exitosa.png)
+
+![Fondos insuficientes](assets/fondos-insuficientes.png)
+
+![Cambiar NIP](assets/cambiar-nip.png)
+
+### Manejo seguro de NIP
+
+El campo para ingresar el nuevo NIP oculta los dígitos con asteriscos. Esto lo corregí tras encontrar que `simpledialog.askinteger` no soportaba el ocultado de caracteres, lo cual era un bug de seguridad real que exponía el NIP en pantalla.
+
+---
+
 ## Funcionalidades
 
 - **Login con bloqueo**: validación de número de cuenta y NIP, con bloqueo automático tras 3 intentos fallidos
