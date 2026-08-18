@@ -256,9 +256,34 @@ def ultimos_movimientos():
     else:
         messagebox.showinfo("Últimos 5 Movimientos", "No hay movimientos registrados.")
 
+def pedir_nip_oculto(titulo, mensaje, minvalue=None, maxvalue=None):
+    resultado = {"valor": None}
+
+    def cerrar():
+        resultado["valor"] = entry.get()
+        emergente.destroy()
+
+    emergente = tk.Toplevel(ventana)
+    emergente.title(titulo)
+    tk.Label(emergente, text=mensaje).pack(pady=5)
+    entry = tk.Entry(emergente, show="*")
+    entry.pack(pady=5)
+    tk.Button(emergente, text="OK", command=cerrar).pack(pady=5)
+
+    ventana.wait_window(emergente)
+    
+    try:
+        valor = int(resultado["valor"])
+        if minvalue is not None and valor < minvalue:
+            return None
+        if maxvalue is not None and valor > maxvalue:
+            return None
+        return valor
+    except (ValueError, TypeError):
+        return None
 
 def cambiar_nip():
-    nip_actual = simpledialog.askinteger(
+    nip_actual = pedir_nip_oculto(
         "Cambiar NIP", "Ingrese su NIP actual:", minvalue=1000, maxvalue=9999
     )
     if nip_actual is None:
@@ -267,13 +292,13 @@ def cambiar_nip():
         messagebox.showerror("Error", "NIP incorrecto.")
         return
 
-    nip_nuevo = simpledialog.askinteger(
+    nip_nuevo = pedir_nip_oculto(
         "Cambiar NIP", "Ingrese su nuevo NIP:", minvalue=1000, maxvalue=9999
     )
     if nip_nuevo is None:
         return
 
-    nip_confirmacion = simpledialog.askinteger(
+    nip_confirmacion = pedir_nip_oculto(
         "Cambiar NIP", "Confirme su nuevo NIP:", minvalue=1000, maxvalue=9999
     )
     if nip_confirmacion is None:
